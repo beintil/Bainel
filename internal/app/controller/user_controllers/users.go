@@ -28,8 +28,8 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			log.Panic(write, err)
 		}
+		return
 	}
-
 }
 
 func GetUsers(w http.ResponseWriter, r *http.Request) {

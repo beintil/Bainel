@@ -8,9 +8,7 @@
  {
  
     "nickName": "danik",
-    
     "email": "danik@gmail.com",
-    
     "password": "234"
 
 }
@@ -20,12 +18,9 @@
  как должен выглядеть ответ:
  {
  
-    "_id": "63c28009f33cae51c05d8152",
-    
+    "_id": "63c28009f33cae51c05d8152",   
     "nickName": "danua",
-    
     "email": "sergei@gmail.com",
-    
     "password": "2313"
 
 }

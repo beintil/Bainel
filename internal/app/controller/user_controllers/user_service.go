@@ -31,7 +31,7 @@ type getUserByIDController struct {
 
 func (uc registerUserController) userService() error {
 	uc.rw.Header().Set("Content-Type", "application/json")
-	var err error = nil
+	var err error
 
 	err = json.NewDecoder(uc.req.Body).Decode(&uc.user)
 	if err != nil {
@@ -39,6 +39,17 @@ func (uc registerUserController) userService() error {
 			uc.rw.WriteHeader(http.StatusBadRequest)
 		}
 		uc.rw.WriteHeader(http.StatusInternalServerError)
+	}
+
+	var existingUser user.User
+	err = collection.FindOne(ctx, bson.M{"email": uc.user.Email}).Decode(&existingUser)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+
+		}
+	} else {
+		http.Error(uc.rw, "User with this email already exists", http.StatusConflict)
+		return err
 	}
 
 	switch {
@@ -64,7 +75,10 @@ func (uc registerUserController) userService() error {
 			uc.rw.WriteHeader(http.StatusNotFound)
 		}
 		uc.rw.WriteHeader(http.StatusInternalServerError)
+		return err
 	}
+
+	uc.rw.WriteHeader(http.StatusCreated)
 
 	err = json.NewEncoder(uc.rw).Encode(result)
 	if err != nil {
@@ -73,8 +87,6 @@ func (uc registerUserController) userService() error {
 		}
 		uc.rw.WriteHeader(http.StatusInternalServerError)
 	}
-
-	uc.rw.WriteHeader(http.StatusCreated)
 
 	return err
 }

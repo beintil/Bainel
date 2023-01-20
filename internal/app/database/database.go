@@ -7,23 +7,26 @@ import (
 	"log"
 )
 
-func ConnectDB() (*mongo.Client, error) {
-	log.Println("Connect to MongoDB")
+func ConnectDB() *mongo.Client {
+	log.Print("Connect to MongoDB")
 
 	ctx := context.TODO()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://dail:123@cluster0.8zjtjcp.mongodb.net/?retryWrites=true&w=majority"))
 	if err != nil {
-		return nil, err
+		log.Fatalf("Failed to connect to MongoDB: %v", err)
 	}
+
 	err = client.Ping(ctx, nil)
 	if err != nil {
-		return nil, err
+		log.Fatalf("Failed: %v", err)
 	}
-	return client, nil
+
+	log.Print("Connected OK")
+	return client
 }
 
 func Collection() *mongo.Collection {
-	client, _ := ConnectDB()
+	client := ConnectDB()
 	collection := client.Database("users").Collection("userinfo")
 
 	return collection

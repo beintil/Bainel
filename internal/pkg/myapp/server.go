@@ -1,9 +1,7 @@
 package myapp
 
 import (
-	"RegisterUser/internal/app/database"
 	"RegisterUser/internal/app/handler"
-	"fmt"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -18,7 +16,7 @@ var (
 )
 
 func Run() {
-	log.Printf("Starting")
+	log.Printf("Server is running on port%s", port)
 
 	runFunction()
 
@@ -29,20 +27,8 @@ func Run() {
 		}
 		log.Fatal("Error on ListenAndServe", err)
 	}
-
-	fmt.Println(http.StatusText(http.StatusOK))
 }
 
 func runFunction() {
-	ErrorDB()
 	handler.Handler(router)
-}
-
-func ErrorDB() {
-	_, err := database.ConnectDB()
-	if err != nil {
-		log.Fatalf("Error connecting database: %v", err)
-	}
-
-	log.Print("Connected to MongoDB OK")
 }

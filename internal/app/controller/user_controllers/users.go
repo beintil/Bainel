@@ -15,11 +15,10 @@ var (
 )
 
 func RegisterUser(w http.ResponseWriter, r *http.Request) {
-	err = service.userService(registerUserController{
-		user: user.User{},
-		rw:   w,
-		req:  r,
-	})
+	err = registerUserService.register(registerUserController{
+		rw:  w,
+		req: r,
+	}, user.User{})
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -33,11 +32,10 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUsers(w http.ResponseWriter, r *http.Request) {
-	err = service.userService(getUserByIDController{
-		users: &user.User{},
-		rw:    w,
-		req:   r,
-	})
+	err = getUserByIDService.getUserById(getUserByIDController{
+		rw:  w,
+		req: r,
+	}, &user.User{})
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

@@ -13,27 +13,12 @@ import (
 	"net/http"
 )
 
-type service interface {
-	userService() error
-}
-
-type registerUserController struct {
-	user user.User
-	rw   http.ResponseWriter
-	req  *http.Request
-}
-
-type getUserByIDController struct {
-	users *user.User
-	rw    http.ResponseWriter
-	req   *http.Request
-}
-
-func (uc registerUserController) userService() error {
+// RegisterUser
+func (uc registerUserController) register(registerUser user.User) error {
 	uc.rw.Header().Set("Content-Type", "application/json")
 	var err error
 
-	err = json.NewDecoder(uc.req.Body).Decode(&uc.user)
+	err = json.NewDecoder(uc.req.Body).Decode(&registerUser)
 	if err != nil {
 		if err == io.EOF {
 			uc.rw.WriteHeader(http.StatusBadRequest)
@@ -41,35 +26,38 @@ func (uc registerUserController) userService() error {
 		uc.rw.WriteHeader(http.StatusInternalServerError)
 	}
 
+	// Проверяем, существует ли введенный email в бд, если да, то отправляем ошибку, если нет, то мы ничего не делаем
 	var existingUser user.User
-	err = collection.FindOne(ctx, bson.M{"email": uc.user.Email}).Decode(&existingUser)
+	err = collection.FindOne(ctx, bson.M{"email": registerUser.Email}).Decode(&existingUser)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
+			// Такого email не существует, значит можно регистрироваться
 
+			// Проверяем, не введены ли пользователем пустые поля, чтобы избежать пустых значений в дб
+			switch {
+			case registerUser.NickName == "":
+				uc.rw.WriteHeader(http.StatusLengthRequired)
+				err = errors.New("invalid userNickName")
+				return err
+
+			case registerUser.Email == "":
+				uc.rw.WriteHeader(http.StatusLengthRequired)
+				err = errors.New("invalid userEmail")
+				return err
+
+			case registerUser.Password == "":
+				uc.rw.WriteHeader(http.StatusLengthRequired)
+				err = errors.New("invalid userPassword")
+				return err
+			}
 		}
 	} else {
 		http.Error(uc.rw, "User with this email already exists", http.StatusConflict)
 		return err
 	}
 
-	switch {
-	case uc.user.NickName == "":
-		uc.rw.WriteHeader(http.StatusLengthRequired)
-		err = errors.New("invalid userNickName")
-		return err
-
-	case uc.user.Email == "":
-		uc.rw.WriteHeader(http.StatusLengthRequired)
-		err = errors.New("invalid userEmail")
-		return err
-
-	case uc.user.Password == "":
-		uc.rw.WriteHeader(http.StatusLengthRequired)
-		err = errors.New("invalid userPassword")
-		return err
-	}
-
-	var result, resultErr = collection.InsertOne(ctx, uc.user)
+	// Создаем/Регистрируем пользователя
+	var result, resultErr = collection.InsertOne(ctx, registerUser)
 	if resultErr != nil {
 		if err == mongo.ErrNoDocuments {
 			uc.rw.WriteHeader(http.StatusNotFound)
@@ -91,10 +79,11 @@ func (uc registerUserController) userService() error {
 	return err
 }
 
-func (uc getUserByIDController) userService() error {
+func (uc getUserByIDController) getUserById(getUser *user.User) error {
 	uc.rw.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(uc.req)
 
+	// получаем введенный id
 	id, err := primitive.ObjectIDFromHex(vars["id"])
 	if err != nil {
 		if err == primitive.ErrInvalidHex {
@@ -108,7 +97,9 @@ func (uc getUserByIDController) userService() error {
 
 	query := bson.M{"_id": id}
 
-	if err = collection.FindOne(ctx, query).Decode(&uc.users); err != nil {
+	// Проверяем, существует ли пользователь с таким id, если не существует, то выводим ошибку, если существует, то
+	// отправляем данные пользователя
+	if err = collection.FindOne(ctx, query).Decode(&getUser); err != nil {
 		if err == mongo.ErrNoDocuments {
 			uc.rw.WriteHeader(http.StatusNoContent)
 			return err
@@ -117,7 +108,7 @@ func (uc getUserByIDController) userService() error {
 		log.Panic(err)
 	}
 
-	err = json.NewDecoder(uc.req.Body).Decode(uc.users)
+	err = json.NewDecoder(uc.req.Body).Decode(getUser)
 	if err != nil {
 		if err == io.EOF {
 			uc.rw.WriteHeader(http.StatusInternalServerError)
@@ -127,7 +118,7 @@ func (uc getUserByIDController) userService() error {
 		log.Panic(err)
 	}
 
-	err = json.NewEncoder(uc.rw).Encode(uc.users)
+	err = json.NewEncoder(uc.rw).Encode(getUser)
 	if err != nil {
 		uc.rw.WriteHeader(http.StatusInternalServerError)
 		log.Panic(err)

@@ -33,7 +33,7 @@ func (uc registerUserController) register(registerUser user.User) error {
 		if err == mongo.ErrNoDocuments {
 			// Такого email не существует, значит можно регистрироваться
 
-			// Проверяем, не введены ли пользователем пустые поля, чтобы избежать пустых значений в дб
+			// Проверяем, не введены ли пользователем все поля, чтобы избежать пустых значений в дб
 			switch {
 			case registerUser.NickName == "":
 				uc.rw.WriteHeader(http.StatusLengthRequired)

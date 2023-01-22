@@ -2,6 +2,7 @@ package user_controllers
 
 import (
 	"RegisterUser/repository/user"
+	"context"
 	"encoding/json"
 	"errors"
 	"github.com/gorilla/mux"
@@ -121,6 +122,35 @@ func (uc getUserByIDController) getUserById(getUser *user.User) error {
 	err = json.NewEncoder(uc.rw).Encode(getUser)
 	if err != nil {
 		uc.rw.WriteHeader(http.StatusInternalServerError)
+		log.Panic(err)
+	}
+
+	return err
+}
+
+func (uc loginUserController) loginUser(user user.User, login user.Login) error {
+	err = json.NewDecoder(uc.req.Body).Decode(&login)
+	if err != nil {
+		if err == io.EOF {
+			uc.rw.WriteHeader(http.StatusBadRequest)
+			return err
+		}
+		uc.rw.WriteHeader(http.StatusInternalServerError)
+		log.Panic(err)
+	}
+
+	if err = collection.FindOne(context.TODO(), bson.M{"email": login.Email}).Decode(&user); err != nil {
+		err = errors.New("incorrect email")
+		return err
+	}
+
+	if user.Password != login.Password {
+		err = errors.New("incorrect password")
+		return err
+	}
+	uc.rw.WriteHeader(http.StatusOK)
+	_, err = uc.rw.Write([]byte("login ok"))
+	if err != nil {
 		log.Panic(err)
 	}
 

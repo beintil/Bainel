@@ -1,4 +1,4 @@
-package user_controllers
+package authentication
 
 import (
 	"RegisterUser/internal/app/database"
@@ -14,8 +14,8 @@ var (
 	err        error
 )
 
-func RegisterUser(w http.ResponseWriter, r *http.Request) {
-	err = registerUserService.register(registerUserController{
+func Registration(w http.ResponseWriter, r *http.Request) {
+	err = registerService.register(registerController{
 		rw:  w,
 		req: r,
 	}, user.User{})
@@ -31,26 +31,8 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetUsers(w http.ResponseWriter, r *http.Request) {
-	err = getUserByIDService.getUserById(getUserByIDController{
-		rw:  w,
-		req: r,
-	}, &user.User{})
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		write, err := w.Write([]byte(err.Error()))
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			log.Panic(write, err)
-		}
-	}
-
-	w.WriteHeader(http.StatusOK)
-}
-
-func Login(w http.ResponseWriter, r *http.Request) {
-	err = loginUserService.loginUser(loginUserController{
+func Authorization(w http.ResponseWriter, r *http.Request) {
+	err = authorizationService.authorization(authorizationController{
 		rw:  w,
 		req: r,
 	}, user.User{}, user.Login{})

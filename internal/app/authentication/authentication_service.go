@@ -1,21 +1,19 @@
-package user_controllers
+package authentication
 
 import (
 	"RegisterUser/repository/user"
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"io"
 	"log"
 	"net/http"
 )
 
-// RegisterUser
-func (uc registerUserController) register(registerUser user.User) error {
+// Registration
+func (uc registerController) register(registerUser user.User) error {
 	uc.rw.Header().Set("Content-Type", "application/json")
 	var err error
 
@@ -80,55 +78,8 @@ func (uc registerUserController) register(registerUser user.User) error {
 	return err
 }
 
-func (uc getUserByIDController) getUserById(getUser *user.User) error {
-	uc.rw.Header().Set("Content-Type", "application/json")
-	vars := mux.Vars(uc.req)
-
-	// получаем введенный id
-	id, err := primitive.ObjectIDFromHex(vars["id"])
-	if err != nil {
-		if err == primitive.ErrInvalidHex {
-			uc.rw.WriteHeader(http.StatusLengthRequired)
-			err = errors.New("invalid id")
-			return err
-		}
-		uc.rw.WriteHeader(http.StatusInternalServerError)
-		log.Panic(err)
-	}
-
-	query := bson.M{"_id": id}
-
-	// Проверяем, существует ли пользователь с таким id, если не существует, то выводим ошибку, если существует, то
-	// отправляем данные пользователя
-	if err = collection.FindOne(ctx, query).Decode(&getUser); err != nil {
-		if err == mongo.ErrNoDocuments {
-			uc.rw.WriteHeader(http.StatusNoContent)
-			return err
-		}
-		uc.rw.WriteHeader(http.StatusInternalServerError)
-		log.Panic(err)
-	}
-
-	err = json.NewDecoder(uc.req.Body).Decode(getUser)
-	if err != nil {
-		if err == io.EOF {
-			uc.rw.WriteHeader(http.StatusInternalServerError)
-			log.Panic(err)
-		}
-		uc.rw.WriteHeader(http.StatusInternalServerError)
-		log.Panic(err)
-	}
-
-	err = json.NewEncoder(uc.rw).Encode(getUser)
-	if err != nil {
-		uc.rw.WriteHeader(http.StatusInternalServerError)
-		log.Panic(err)
-	}
-
-	return err
-}
-
-func (uc loginUserController) loginUser(user user.User, login user.Login) error {
+// Authorisation
+func (uc authorizationController) authorization(user user.User, login user.Login) error {
 	err = json.NewDecoder(uc.req.Body).Decode(&login)
 	if err != nil {
 		if err == io.EOF {

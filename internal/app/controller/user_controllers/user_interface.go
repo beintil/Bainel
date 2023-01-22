@@ -24,3 +24,13 @@ type getUserByIDController struct {
 	rw  http.ResponseWriter
 	req *http.Request
 }
+
+// Login
+type loginUserService interface {
+	loginUser(user.User, user.Login) error
+}
+
+type loginUserController struct {
+	rw  http.ResponseWriter
+	req *http.Request
+}

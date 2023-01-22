@@ -25,7 +25,7 @@ type getUserByIDController struct {
 	req *http.Request
 }
 
-// Login
+// Authorisation
 type loginUserService interface {
 	loginUser(user.User, user.Login) error
 }

@@ -11,7 +11,6 @@ type User struct {
 	Password string             `bson:"password" json:"password"`
 }
 
-// Authentication
 type Login struct {
 	Email    string `bson:"email" json:"email"`
 	Password string `bson:"password" json:"password"`

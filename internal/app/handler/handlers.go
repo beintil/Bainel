@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"RegisterUser/internal/app/authentication"
-	"RegisterUser/internal/app/client/menagment/user_menagment"
-	"RegisterUser/internal/app/home"
+	"Bainel/internal/app/authentication"
+	"Bainel/internal/app/client/menagment/user_menagment"
+	"Bainel/internal/app/home"
 )
 
 func (hr handler) authenticationHandler() {

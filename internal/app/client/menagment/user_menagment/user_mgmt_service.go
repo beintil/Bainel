@@ -1,7 +1,7 @@
 package user_menagment
 
 import (
-	"RegisterUser/repository/user"
+	"Bainel/repository/user"
 	"encoding/json"
 	"errors"
 	"github.com/gorilla/mux"

@@ -1,7 +1,7 @@
 package authentication
 
 import (
-	"RegisterUser/repository/user"
+	"Bainel/repository/user"
 	"context"
 	"encoding/json"
 	"errors"

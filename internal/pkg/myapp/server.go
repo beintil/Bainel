@@ -1,7 +1,7 @@
 package myapp
 
 import (
-	"RegisterUser/internal/app/handler"
+	"Bainel/internal/app/handler"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"

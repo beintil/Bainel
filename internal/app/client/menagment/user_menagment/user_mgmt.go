@@ -1,8 +1,8 @@
 package user_menagment
 
 import (
-	"RegisterUser/internal/app/database"
-	"RegisterUser/repository/user"
+	"Bainel/internal/app/database"
+	"Bainel/repository/user"
 	"context"
 	"log"
 	"net/http"

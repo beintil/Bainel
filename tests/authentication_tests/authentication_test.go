@@ -1,8 +1,8 @@
 package authentication_tests
 
 import (
-	"RegisterUser/internal/app/authentication"
-	"RegisterUser/repository/user"
+	"Bainel/internal/app/authentication"
+	"Bainel/repository/user"
 	"bytes"
 	"encoding/json"
 	"net/http"

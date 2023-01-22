@@ -48,3 +48,21 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 }
+
+func Login(w http.ResponseWriter, r *http.Request) {
+	err = loginUserService.loginUser(loginUserController{
+		rw:  w,
+		req: r,
+	}, user.User{}, user.Login{})
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		write, err := w.Write([]byte(err.Error()))
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			log.Panic(write, err)
+		}
+	}
+
+	w.WriteHeader(http.StatusOK)
+}

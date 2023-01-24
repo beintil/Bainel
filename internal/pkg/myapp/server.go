@@ -2,6 +2,7 @@ package myapp
 
 import (
 	"Bainel/internal/app/handler"
+	"Bainel/pkg/error_handler/server_errors"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -12,7 +13,8 @@ const (
 )
 
 var (
-	router = mux.NewRouter()
+	router    = mux.NewRouter()
+	lineError string
 )
 
 func Run() {
@@ -23,9 +25,11 @@ func Run() {
 	err := http.ListenAndServe(port, router)
 	if err != nil {
 		if err == http.ErrServerClosed {
-			log.Fatal("Server closed", err)
+			lineError = "myapp, line 25: Server closed"
+			server_errors.ErrorFatal(err, lineError)
 		}
-		log.Fatal("Error on ListenAndServe", err)
+		lineError = "myapp, line 25: Error on ListenAndServe"
+		server_errors.ErrorFatal(err, lineError)
 	}
 }
 

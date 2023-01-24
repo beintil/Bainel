@@ -7,20 +7,23 @@ import (
 
 // Registration
 type registerService interface {
-	register(user.User) error
+	register() error
 }
 
 type registerController struct {
-	rw  http.ResponseWriter
-	req *http.Request
+	rw           http.ResponseWriter
+	req          *http.Request
+	registerUser user.User
 }
 
 // Authorisation
 type authorizationService interface {
-	authorization(user.User, user.Login) error
+	authorization() error
 }
 
 type authorizationController struct {
-	rw  http.ResponseWriter
-	req *http.Request
+	rw    http.ResponseWriter
+	req   *http.Request
+	user  user.User
+	login user.Login
 }

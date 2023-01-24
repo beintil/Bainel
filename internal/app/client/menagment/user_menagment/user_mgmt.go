@@ -16,9 +16,10 @@ var (
 
 func UserSearchByID(w http.ResponseWriter, r *http.Request) {
 	err = searchUserByIDService.getUserById(searchUserByIDController{
-		rw:  w,
-		req: r,
-	}, &user.User{})
+		rw:   w,
+		req:  r,
+		user: &user.User{},
+	})
 
 	if err != nil {
 		client_errors.ErrorPanic(w, err)

@@ -1,7 +1,6 @@
 package user_menagment
 
 import (
-	"Bainel/repository/user"
 	"encoding/json"
 	"errors"
 	"github.com/gorilla/mux"
@@ -9,12 +8,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"io"
-	"log"
 	"net/http"
 )
 
 // Get User from id
-func (uc searchUserByIDController) getUserById(getUser *user.User) error {
+func (uc searchUserByIDController) getUserById() error {
 	uc.rw.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(uc.req)
 
@@ -27,36 +25,36 @@ func (uc searchUserByIDController) getUserById(getUser *user.User) error {
 			return err
 		}
 		uc.rw.WriteHeader(http.StatusInternalServerError)
-		log.Panic(err)
+		return err
 	}
 
 	query := bson.M{"_id": id}
 
 	// Проверяем, существует ли пользователь с таким id, если не существует, то выводим ошибку, если существует, то
 	// отправляем данные пользователя
-	if err = collection.FindOne(ctx, query).Decode(&getUser); err != nil {
+	if err = collection.FindOne(ctx, query).Decode(&uc.user); err != nil {
 		if err == mongo.ErrNoDocuments {
 			uc.rw.WriteHeader(http.StatusNoContent)
 			return err
 		}
 		uc.rw.WriteHeader(http.StatusInternalServerError)
-		log.Panic(err)
+		return err
 	}
 
-	err = json.NewDecoder(uc.req.Body).Decode(getUser)
+	err = json.NewDecoder(uc.req.Body).Decode(uc.user)
 	if err != nil {
 		if err == io.EOF {
 			uc.rw.WriteHeader(http.StatusInternalServerError)
-			log.Panic(err)
+			return err
 		}
 		uc.rw.WriteHeader(http.StatusInternalServerError)
-		log.Panic(err)
+		return err
 	}
 
-	err = json.NewEncoder(uc.rw).Encode(getUser)
+	err = json.NewEncoder(uc.rw).Encode(uc.user)
 	if err != nil {
 		uc.rw.WriteHeader(http.StatusInternalServerError)
-		log.Panic(err)
+		return err
 	}
 
 	return err

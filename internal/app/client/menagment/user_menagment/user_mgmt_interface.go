@@ -7,10 +7,11 @@ import (
 
 // Search User By ID
 type searchUserByIDService interface {
-	getUserById(*user.User) error
+	getUserById() error
 }
 
 type searchUserByIDController struct {
-	rw  http.ResponseWriter
-	req *http.Request
+	rw   http.ResponseWriter
+	req  *http.Request
+	user *user.User
 }

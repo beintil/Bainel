@@ -2,14 +2,14 @@ package authentication
 
 import (
 	"Bainel/internal/app/database"
+	"Bainel/pkg/error_handler/client_errors"
 	"Bainel/repository/user"
 	"context"
-	"log"
 	"net/http"
 )
 
 var (
-	collection = database.Collection()
+	collection = database.Collection
 	ctx        = context.TODO()
 	err        error
 )
@@ -21,13 +21,7 @@ func Registration(w http.ResponseWriter, r *http.Request) {
 	}, user.User{})
 
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		write, err := w.Write([]byte(err.Error()))
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			log.Panic(write, err)
-		}
-		return
+		client_errors.ErrorPanic(w, err)
 	}
 }
 
@@ -38,12 +32,7 @@ func Authorization(w http.ResponseWriter, r *http.Request) {
 	}, user.User{}, user.Login{})
 
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		write, err := w.Write([]byte(err.Error()))
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			log.Panic(write, err)
-		}
+		client_errors.ErrorPanic(w, err)
 	}
 
 	w.WriteHeader(http.StatusOK)

@@ -38,12 +38,10 @@ func (uc registerController) register(registerUser user.User) error {
 				uc.rw.WriteHeader(http.StatusLengthRequired)
 				err = errors.New("invalid userNickName")
 				return err
-
 			case registerUser.Email == "":
 				uc.rw.WriteHeader(http.StatusLengthRequired)
 				err = errors.New("invalid userEmail")
 				return err
-
 			case registerUser.Password == "":
 				uc.rw.WriteHeader(http.StatusLengthRequired)
 				err = errors.New("invalid userPassword")

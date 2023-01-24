@@ -14,6 +14,10 @@ var (
 	err        error
 )
 
+func RegisterHTML(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "./internal/app/authentication/register.html")
+}
+
 func Registration(w http.ResponseWriter, r *http.Request) {
 	err = registerService.register(registerController{
 		rw:  w,

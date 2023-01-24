@@ -8,6 +8,7 @@ import (
 
 func (hr handler) authenticationHandler() {
 	// registration - method = "POST"
+	hr.router.HandleFunc("/register", authentication.RegisterHTML).Methods("GET")
 	hr.router.HandleFunc("/register/", authentication.Registration).Methods("POST")
 
 	// authentication - method = "GET"

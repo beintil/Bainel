@@ -16,7 +16,7 @@ func TestRegisterUser(t *testing.T) {
 	defer ts.Close()
 
 	// Создаем тестовый запрос, но тк email не должен повторятся, то меняйте название email для каждого теста
-	testUser := user.User{NickName: "test", Email: "testmail888", Password: "testpassword"}
+	testUser := user.User{NickName: "test", Email: "testmail8888", Password: "testpassword"}
 	jsonUser, err := json.Marshal(testUser)
 	if err != nil {
 		t.Fatal(err)

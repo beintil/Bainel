@@ -1,7 +1,6 @@
 package authentication
 
 import (
-	"Bainel/repository/user"
 	"context"
 	"encoding/json"
 	"errors"
@@ -25,8 +24,7 @@ func (uc registerController) register() error {
 	}
 
 	// Проверяем, существует ли введенный email в бд, если да, то отправляем ошибку, если нет, то мы ничего не делаем
-	var existingUser user.User
-	err = collection.FindOne(ctx, bson.M{"email": uc.registerUser.Email}).Decode(&existingUser)
+	err = collection.FindOne(ctx, bson.M{"email": uc.registerUser.Email}).Decode(&uc.registerUser)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			// Такого email не существует, значит можно регистрироваться
